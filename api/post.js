@@ -3,9 +3,9 @@ import Anthropic from '@anthropic-ai/sdk';
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
 const SYSTEM_MESSAGE = `You are an expert LinkedIn content creator. 
-Generate engaging, professional LinkedIn posts that are authentic and 
-drive engagement. Format the post with appropriate line breaks, 
-relevant emojis where suitable, and relevant hashtags at the end. 
+Generate engaging, professional LinkedIn posts using plain text only.
+Do NOT use markdown formatting like **bold** or _italic_.
+Use line breaks, emojis, and #hashtags naturally as they appear on LinkedIn.
 Keep the tone professional but conversational.`;
 
 export default async function post(req, res) {
@@ -17,6 +17,9 @@ export default async function post(req, res) {
       return res.status(500).json({ error: 'API key not configured' });
     }
     const { systemMessage, prompt } = req.body;
+    const userMessage = prompt.examples
+      ? `${prompt.message}\n\nHere are some examples of the style and format I want:\n${prompt.examples}`
+      : prompt.message;
     let imageSource = {};
     if (prompt.image) {
       if (prompt.image.type === 'file') {
@@ -34,10 +37,10 @@ export default async function post(req, res) {
     }
     const content = prompt.image
       ? [
-          { type: 'text', text: prompt.message },
+          { type: 'text', text: userMessage },
           { type: 'image', source: imageSource },
         ]
-      : prompt.message;
+      : userMessage;
     const client = new Anthropic({ apiKey: CLAUDE_API_KEY });
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',

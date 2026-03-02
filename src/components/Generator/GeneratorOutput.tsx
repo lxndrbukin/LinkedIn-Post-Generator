@@ -1,6 +1,7 @@
 import { type JSX } from 'react';
 import { useSelector } from 'react-redux';
 import { type RootState } from '../../store';
+import ReactMarkdown from 'react-markdown';
 
 export default function GeneratorOutput(): JSX.Element {
   const { image } = useSelector((state: RootState) => state.generator.prompt);
@@ -16,7 +17,11 @@ export default function GeneratorOutput(): JSX.Element {
       <h3>Preview</h3>
       <div className="post-preview-content">
         <div className="post-preview-content-text">
-          {output || 'Your generated post will appear here...'}
+          {output ? (
+            <ReactMarkdown>{output}</ReactMarkdown>
+          ) : (
+            'Your generated post will appear here...'
+          )}
         </div>
         {image && <img src={src} alt="image" />}
       </div>
