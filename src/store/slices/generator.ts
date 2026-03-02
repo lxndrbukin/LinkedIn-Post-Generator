@@ -1,14 +1,16 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type GeneratorProps, type ImageProps } from './types';
+import { generatePost } from '../thunks/post';
 
 const initialState: GeneratorProps = {
   prompt: {
     message: '',
     image: null,
-    examples: null
+    examples: null,
   },
   systemMessage: '',
-  isLoading: false
+  output: '',
+  isLoading: false,
 };
 
 const generatorSlice = createSlice({
@@ -18,7 +20,10 @@ const generatorSlice = createSlice({
     setPrompt: (state: GeneratorProps, action: PayloadAction<string>) => {
       state.prompt.message = action.payload;
     },
-    setSystemMessage: (state: GeneratorProps, action: PayloadAction<string>) => {
+    setSystemMessage: (
+      state: GeneratorProps,
+      action: PayloadAction<string>
+    ) => {
       state.systemMessage = action.payload;
     },
     setExamples: (state: GeneratorProps, action: PayloadAction<string>) => {
@@ -26,9 +31,25 @@ const generatorSlice = createSlice({
     },
     setImage: (state: GeneratorProps, action: PayloadAction<ImageProps>) => {
       state.prompt.image = action.payload;
-    }
-  }
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(generatePost.pending, (state: GeneratorProps) => {
+      state.isLoading = true;
+    });
+    builder.addCase(
+      generatePost.fulfilled,
+      (state: GeneratorProps, action: PayloadAction<string>) => {
+        state.output = action.payload;
+        state.isLoading = false;
+      }
+    );
+    builder.addCase(generatePost.rejected, (state: GeneratorProps) => {
+      state.isLoading = false;
+    });
+  },
 });
 
 export default generatorSlice.reducer;
-export const { setPrompt, setSystemMessage, setExamples, setImage } = generatorSlice.actions;
+export const { setPrompt, setSystemMessage, setExamples, setImage } =
+  generatorSlice.actions;

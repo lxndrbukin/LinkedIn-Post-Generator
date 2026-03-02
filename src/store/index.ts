@@ -3,12 +3,13 @@ import generator from './slices/generator';
 
 export const store = configureStore({
   reducer: {
-    generator
+    generator,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-export * from "./slices/types";
-export * from "./slices/generator";
+export * from './slices/types';
+export * from './slices/generator';
+export * from './thunks/post';

@@ -1,11 +1,14 @@
 import { type JSX } from 'react';
-import { useSelector } from 'react-redux';
-import { type RootState } from '../../store';
+import { useSelector, useDispatch } from 'react-redux';
+import { type RootState, type AppDispatch, generatePost } from '../../store';
 import GeneratorForm from './GeneratorForm';
 import GeneratorSettings from './GeneratorSettings';
 
 export default function Generator(): JSX.Element {
-  const { isLoading } = useSelector((state: RootState) => state.generator);
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, prompt, systemMessage } = useSelector(
+    (state: RootState) => state.generator
+  );
 
   return (
     <div className="generator">
@@ -13,7 +16,10 @@ export default function Generator(): JSX.Element {
       <p>Powered by Claude</p>
       <GeneratorForm />
       <GeneratorSettings />
-      <button disabled={isLoading}>
+      <button
+        onClick={() => dispatch(generatePost({ prompt, systemMessage }))}
+        disabled={isLoading || !prompt.message.trim()}
+      >
         {isLoading ? 'Generating' : 'Generate'}
       </button>
     </div>
