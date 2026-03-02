@@ -1,6 +1,16 @@
+export type ImageProps = {
+  type: 'url' | 'file';
+  data: string;
+  mediaType?: string;
+} | null;
+
 export type GeneratorProps = {
-  prompt: string;
+  prompt: {
+    message: string;
+    image: ImageProps;
+    examples: string | null;
+  };
   systemMessage: string;
-  examples: string;
+  output: string | null;
   isLoading: boolean;
 };

@@ -1,5 +1,10 @@
-import { type JSX } from "react";
+import { type JSX } from 'react';
+import Generator from './Generator/Generator';
 
 export default function App(): JSX.Element {
-  return <div>App</div>;
+  return (
+    <div>
+      <Generator />
+    </div>
+  );
 }

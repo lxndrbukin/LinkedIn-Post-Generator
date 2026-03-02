@@ -1,21 +1,43 @@
-import { type JSX, useState } from 'react';
+import { type JSX, type ChangeEvent, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   type RootState,
   type AppDispatch,
   setExamples,
   setSystemMessage,
+  setImage,
 } from '../../store';
 
 export default function GeneratorSettings(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const { systemMessage, examples } = useSelector(
-    (state: RootState) => state.generator
+  const { systemMessage } = useSelector((state: RootState) => state.generator);
+  const { examples } = useSelector(
+    (state: RootState) => state.generator.prompt
   );
 
   const [systemMsg, showSystemMsg] = useState<boolean>(false);
   const [outputExamples, showOutputExamples] = useState<boolean>(false);
-  const [imageUpload, setImageUpload] = useState<'file' | 'url'>('file');
+  const [imageUploadType, setImageUploadType] = useState<'file' | 'url'>(
+    'file'
+  );
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      dispatch(
+        setImage({
+          type: imageUploadType,
+          data: base64,
+          mediaType: file.type,
+        })
+      );
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className="settings">
@@ -47,7 +69,7 @@ export default function GeneratorSettings(): JSX.Element {
           </label>
           {outputExamples && (
             <textarea
-              value={examples}
+              value={examples ?? ''}
               placeholder="Provide output examples to the AI model..."
               onChange={(e) => dispatch(setExamples(e.target.value))}
             />
@@ -57,16 +79,27 @@ export default function GeneratorSettings(): JSX.Element {
           <label>
             Image <span>(optional)</span>
           </label>
-          <button type="button" onClick={() => setImageUpload('file')}>
+          <button type="button" onClick={() => setImageUploadType('file')}>
             Image File
           </button>
-          <button type="button" onClick={() => setImageUpload('url')}>
+          <button type="button" onClick={() => setImageUploadType('url')}>
             URL
           </button>
-          {imageUpload === 'file' ? (
-            <input type="file" accept="image/*" />
+          {imageUploadType === 'file' ? (
+            <input onChange={handleFileChange} type="file" accept="image/*" />
           ) : (
-            <input type="text" placeholder="Enter image URL..." />
+            <input
+              onChange={(e) =>
+                dispatch(
+                  setImage({
+                    type: imageUploadType,
+                    data: e.target.value,
+                  })
+                )
+              }
+              type="text"
+              placeholder="Enter image URL..."
+            />
           )}
         </div>
       </form>

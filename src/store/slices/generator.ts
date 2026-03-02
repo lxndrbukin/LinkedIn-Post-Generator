@@ -1,10 +1,13 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type GeneratorProps } from './types';
+import { type GeneratorProps, type ImageProps } from './types';
 
 const initialState: GeneratorProps = {
-  prompt: '',
+  prompt: {
+    message: '',
+    image: null,
+    examples: null
+  },
   systemMessage: '',
-  examples: '',
   isLoading: false
 };
 
@@ -13,16 +16,19 @@ const generatorSlice = createSlice({
   initialState,
   reducers: {
     setPrompt: (state: GeneratorProps, action: PayloadAction<string>) => {
-      state.prompt = action.payload;
+      state.prompt.message = action.payload;
     },
     setSystemMessage: (state: GeneratorProps, action: PayloadAction<string>) => {
       state.systemMessage = action.payload;
     },
     setExamples: (state: GeneratorProps, action: PayloadAction<string>) => {
-      state.examples = action.payload;
+      state.prompt.examples = action.payload;
+    },
+    setImage: (state: GeneratorProps, action: PayloadAction<ImageProps>) => {
+      state.prompt.image = action.payload;
     }
   }
 });
 
 export default generatorSlice.reducer;
-export const { setPrompt, setSystemMessage, setExamples } = generatorSlice.actions;
+export const { setPrompt, setSystemMessage, setExamples, setImage } = generatorSlice.actions;
