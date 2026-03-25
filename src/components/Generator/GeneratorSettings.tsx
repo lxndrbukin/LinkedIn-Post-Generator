@@ -79,12 +79,14 @@ export default function GeneratorSettings(): JSX.Element {
           <label>
             Image <span>(optional)</span>
           </label>
-          <button type="button" onClick={() => setImageUploadType('file')}>
-            Image File
-          </button>
-          <button type="button" onClick={() => setImageUploadType('url')}>
-            URL
-          </button>
+          <div className="form-img-select">
+            <button type="button" onClick={() => setImageUploadType('file')}>
+              Image File
+            </button>
+            <button type="button" onClick={() => setImageUploadType('url')}>
+              URL
+            </button>
+          </div>
           {imageUploadType === 'file' ? (
             <input onChange={handleFileChange} type="file" accept="image/*" />
           ) : (
